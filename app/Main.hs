@@ -8,14 +8,10 @@ import           TreeLess
 
 main :: IO ()
 main = getArgs >>= \case
-  [mode] -> case mode of
-    "-p" -> print testTerm
-    _    -> error $ "Unknown mode: " <> mode
-  [declsPath, mode, name] -> case mode of
-    "-p" -> printDecl name declsPath
-    "-d" -> deforesterizate name declsPath
-    _    -> error $ "Unknown mode: " <> mode
-  _ -> error "Wrong number of arguments"
+  [mode] | mode == "-p" -> print testTerm
+  [declsPath, mode, name] | mode == "-p" -> printDecl name declsPath
+  [declsPath, mode, depth, name] | mode == "-d" -> deforesterizate name (read depth) declsPath
+  _ -> error "Wrong arguments format"
 
 testTerm :: Term
 testTerm =
@@ -39,7 +35,7 @@ process f declsPath = do
 printDecl :: Ident -> FilePath -> IO ()
 printDecl ident = process ($ ident)
 
-deforesterizate :: Ident -> FilePath -> IO ()
-deforesterizate ident = process $ \decls ->
+deforesterizate :: Ident -> Int -> FilePath -> IO ()
+deforesterizate ident depth = process $ \decls ->
   let d@Decl{..} = decls ident in
-  d { declBody = treeLess decls declBody }
+  d { declBody = treeLess depth decls declBody }
