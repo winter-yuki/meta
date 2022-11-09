@@ -1,17 +1,15 @@
 module Utils where
 
-import           Data.List
+import           Data.List (find)
 import           Data.Maybe
 import           Lang
 
 type Subst = (Ident, Term)
 
-data Decl = Decl { declParams :: [Ident], declBody :: Term }
-type Decls = Ident -> Decl
-
 subst :: Subst -> Term -> Term
 subst s@(n, t) = \case
   Var n' | n == n' -> t
+  v@(Var _)        -> v
   App n' ts        -> App n' (subst s <$> ts)
   Ctor n' ts       -> Ctor n' (subst s <$> ts)
   Case t' ps       -> Case (subst s t') (fmap (subst s) <$> ps)

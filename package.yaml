@@ -21,6 +21,7 @@ description:         Please see the README on GitHub at <https://github.com/gith
 
 dependencies:
 - base >= 4.7 && < 5
+- parsec
 
 extensions:
 - LambdaCase
@@ -37,6 +38,9 @@ ghc-options:
 - -Wredundant-constraints
 - -XLambdaCase
 - -XRecordWildCards
+- -XScopedTypeVariables
+- -Wno-missing-export-lists
+- -Wno-name-shadowing
 
 library:
   source-dirs: src
