@@ -1,6 +1,6 @@
 module Utils where
 
-import           Data.List (find)
+import           Data.List  (find)
 import           Data.Maybe
 import           Lang
 

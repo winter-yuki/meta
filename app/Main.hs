@@ -9,8 +9,8 @@ import           TreeLess
 main :: IO ()
 main = getArgs >>= \case
   [mode] | mode == "-p" -> print testTerm
-  [declsPath, mode, name] | mode == "-p" -> printDecl name declsPath
-  [declsPath, mode, depth, name] | mode == "-d" -> deforesterizate name (read depth) declsPath
+  [defsPath, mode, name] | mode == "-p" -> printDef name defsPath
+  [defsPath, mode, depth, name] | mode == "-d" -> deforestate name (read depth) defsPath
   _ -> error "Wrong arguments format"
 
 testTerm :: Term
@@ -25,17 +25,17 @@ testTerm =
           (App "h" [Var "a", Var "b", Var "c"])
           [ (PatCtor "c4" ["v5", "v6"], Var "p") ] ) ]
 
-process :: Show a => (Decls -> a) -> FilePath -> IO ()
-process f declsPath = do
-  mbDecls <- runParser parseFile () declsPath <$> readFile declsPath
-  case mbDecls of
+process :: Show a => (Defs -> a) -> FilePath -> IO ()
+process f defsPath = do
+  mbDefs <- runParser parseFile () defsPath <$> readFile defsPath
+  case mbDefs of
     Left e      -> print e
-    Right decls -> print $ f decls
+    Right defs -> print $ f defs
 
-printDecl :: Ident -> FilePath -> IO ()
-printDecl ident = process ($ ident)
+printDef :: Ident -> FilePath -> IO ()
+printDef ident = process ($ ident)
 
-deforesterizate :: Ident -> Int -> FilePath -> IO ()
-deforesterizate ident depth = process $ \decls ->
-  let d@Decl{..} = decls ident in
-  d { declBody = treeLess depth decls declBody }
+deforestate :: Ident -> Int -> FilePath -> IO ()
+deforestate ident depth = process $ \defs ->
+  let d@Def{..} = defs ident in
+  d { defBody = treeLess depth defs defBody }

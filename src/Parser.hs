@@ -1,7 +1,7 @@
 module Parser
   ( parseTerm
-  , parseDecl
-  , parseDecls
+  , parseDef
+  , parseDefs
   , parseFile
   ) where
 
@@ -72,31 +72,31 @@ term = enclosed (inspaces term) <|> caseof <|> ctor <|> try func <|> var
 parseTerm :: Parser Term
 parseTerm = term
 
-decl :: Parser Decl
-decl = Decl <$
+def :: Parser Def
+def = Def <$
   string "\\fun" <* spaces <*> lident <* spaces <*> many (inspaces lident) <*
   spaces <* string "=>" <*>
   inspaces term
 
-parseDecl :: Parser Decl
-parseDecl = decl
+parseDef :: Parser Def
+parseDef = def
 
 comment :: Parser ()
 comment = void $ (string "-- " *> many anything) `endBy1` char '\n'
 
-nondecl :: Parser ()
-nondecl = void $ comment <|> spaces1
+nondef :: Parser ()
+nondef = void $ comment <|> spaces1
 
-decls :: Parser Decls
-decls = fmap mkDecls $ inspaces $ many (many nondecl *> decl <* many nondecl)
+defs :: Parser Defs
+defs = fmap mkDefs $ inspaces $ many (many nondef *> def <* many nondef)
   where
-    mkDecls :: [Decl] -> Decls
-    mkDecls = foldr
-      (\d@Decl{..} ds ident -> if ident == declName then d else ds ident)
-      (error "No such declaration found")
+    mkDefs :: [Def] -> Defs
+    mkDefs = foldr
+      (\d@Def{..} ds ident -> if ident == defName then d else ds ident)
+      (error "No such defaration found")
 
-parseDecls :: Parser Decls
-parseDecls = decls
+parseDefs :: Parser Defs
+parseDefs = defs
 
-parseFile :: Parser Decls
-parseFile = decls <* eof
+parseFile :: Parser Defs
+parseFile = defs <* eof

@@ -17,5 +17,5 @@ And code transformations:
 
 Clone repo and run:
 ```
-$ stack run -- test.l -d 5 test
+$ stack run -- defs.la -d 5 test
 ```

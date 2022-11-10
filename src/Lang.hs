@@ -2,8 +2,8 @@ module Lang
   ( Ident
   , Pattern(..)
   , Term(..)
-  , Decl(..)
-  , Decls
+  , Def(..)
+  , Defs
   ) where
 
 import           Data.Functor
@@ -51,15 +51,15 @@ appAndCtor i n ts
 indent :: Int -> String
 indent = flip replicate ' '
 
-data Decl = Decl
-  { declName   :: Ident
-  , declParams :: [Ident]
-  , declBody   :: Term
+data Def = Def
+  { defName   :: Ident
+  , defParams :: [Ident]
+  , defBody   :: Term
   }
 
-instance Show Decl where
-  show Decl{..} =
-    "\\fun " <> declName <> " " <> unwords declParams <> " => " <>
-    showIndent 2 declBody
+instance Show Def where
+  show Def{..} =
+    "\\fun " <> defName <> " " <> unwords defParams <> " => " <>
+    showIndent 2 defBody
 
-type Decls = Ident -> Decl
+type Defs = Ident -> Def
