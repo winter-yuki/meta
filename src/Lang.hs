@@ -44,7 +44,7 @@ showIndent i = \case
 
 appAndCtor :: Int -> Ident -> [Term] -> String
 appAndCtor i n ts
-  | all isShort ts = n <> " " <> unwords (show <$> ts)
+  | all isShort ts = unwords (n : fmap show ts)
   | otherwise = n <> "\n" <> indent (i + 2) <> "(" <>
     intercalate (")\n" <> indent (i + 2) <> "(") (showIndent (i + 2) <$> ts) <> ")"
 

@@ -7,17 +7,16 @@ import           Lang
 type Subst = (Ident, Term)
 
 subst :: Subst -> Term -> Term
-subst s@(n, t) = \case
-  Var n' | n == n' -> t
-  v@(Var _)        -> v
-  App n' ts        -> App n' (subst s <$> ts)
-  Ctor n' ts       -> Ctor n' (subst s <$> ts)
-  Case t' ps       -> Case (subst s t') (fmap (subst s) <$> ps)
+subst = substs . (: [])
 
-substs :: Term -> [Subst] -> Term
-substs = foldr subst
+substs :: [Subst] -> Term -> Term
+substs ss = \case
+  v@(Var n)  -> fromMaybe v (lookup n ss)
+  App n' ts  -> App n' (substs ss <$> ts)
+  Ctor n' ts -> Ctor n' (substs ss <$> ts)
+  Case t' ps -> Case (substs ss t') (fmap (substs ss) <$> ps)
 
-patLookup :: [(Pattern, Term)] -> Ident -> Term
-patLookup ps n = snd $
+patLookup :: [(Pattern, Term)] -> Ident -> (Pattern, Term)
+patLookup ps n =
   fromMaybe (error "Pattern not found :(") $
   find (\(PatCtor n' _, _) -> n == n') ps
